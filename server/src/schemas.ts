@@ -28,9 +28,38 @@ export const rubricSchema = z.object({
   criteria: z.array(rubricCriterionSchema).min(1).max(8),
 });
 
+export const rankingSchema = z.object({
+  rankings: z
+    .array(
+      z.object({
+        profile_id: z.string().min(1),
+        score: z.number().min(0).max(100),
+        explanation: z.string().min(1).max(600),
+        strengths: z.array(z.string()).max(4),
+        concerns: z.array(z.string()).max(3),
+      })
+    )
+    .max(48),
+});
+
 export const searchSpecSchema = z.object({
   filters: filtersSchema,
   rubric: rubricSchema,
+});
+
+export const refinementSchema = z.object({
+  filters: filtersSchema,
+  rubric: rubricSchema,
+  changes: z
+    .array(
+      z.object({
+        area: z.enum(["filters", "rubric"]),
+        change: z.string().min(1).max(300),
+        reason: z.string().min(1).max(500),
+      })
+    )
+    .min(1)
+    .max(8),
 });
 
 export type SearchSpec = z.infer<typeof searchSpecSchema>;
