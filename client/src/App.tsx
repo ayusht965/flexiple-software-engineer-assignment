@@ -73,6 +73,64 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [frozen, setFrozen] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [refining, setRefining] = useState(false);
+
+  const [changes, setChanges] = useState<
+    {
+      area: "filters" | "rubric";
+      change: string;
+      reason: string;
+    }[]
+  >([]);
+
+  async function handleRefinement() {
+    if (!spec || !feedback.trim()) return;
+
+    setRefining(true);
+    setError("");
+    setChanges([]);
+
+    try {
+      const response = await fetch(`${API_URL}/refine`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          filters: spec.filters,
+          rubric: spec.rubric,
+          feedback,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || "Failed to refine search."
+        );
+      }
+
+      setSpec({
+        filters: result.filters,
+        rubric: result.rubric,
+      });
+
+      setProfiles(result.profiles);
+      setRankings(result.rankings);
+      setChanges(result.changes);
+      setFeedback("");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to refine search."
+      );
+    } finally {
+      setRefining(false);
+    }
+  }
 
   async function handleSearch() {
     if (!requirement.trim()) return;
@@ -485,21 +543,80 @@ function App() {
               )}
             </section>
 
-            <section className="feedback-box">
-              <div className="feedback-icon">
-                <MessageSquare size={20} />
+            <section className="feedback-panel">
+              <div className="feedback-heading">
+                <div className="feedback-icon">
+                  <MessageSquare size={20} />
+                </div>
+
+                <div>
+                  <strong>Refine the shortlist</strong>
+                  <p>
+                    Tell the AI what you liked or disliked about these
+                    candidates.
+                  </p>
+                </div>
               </div>
-              <div>
-                <strong>Refine this search</strong>
-                <p>
-                  Tell the AI what you want to change about these
-                  results.
-                </p>
+
+              <textarea
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder='Example: "1 is too junior. I want stronger startup experience and at least 5 years."'
+                disabled={frozen || refining}
+              />
+
+              <div className="feedback-footer">
+                <span>
+                  The AI will explain what it changed before reranking.
+                </span>
+
+                <button
+                  onClick={handleRefinement}
+                  disabled={!feedback.trim() || frozen || refining}
+                >
+                  {refining ? (
+                    <>
+                      <RefreshCw className="spin" size={16} />
+                      Refining...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={16} />
+                      Refine search
+                    </>
+                  )}
+                </button>
               </div>
-              <button disabled={frozen}>
-                Give feedback
-              </button>
             </section>
+            {changes.length > 0 && (
+              <section className="changes-panel">
+                <div className="section-header">
+                  <div>
+                    <span className="eyebrow">
+                      <Sparkles size={14} />
+                      Refinement applied
+                    </span>
+
+                    <h2>What changed</h2>
+                  </div>
+                </div>
+
+                <div className="changes-list">
+                  {changes.map((change, index) => (
+                    <div className="change-item" key={index}>
+                      <span className="change-area">
+                        {change.area}
+                      </span>
+
+                      <div>
+                        <strong>{change.change}</strong>
+                        <p>{change.reason}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
           </>
         )}
 

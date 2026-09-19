@@ -4,6 +4,7 @@ import { filterProfiles } from "../services/profileFilter";
 import { getProfiles } from "../services/profileData";
 import { searchSpecSchema } from "../schemas";
 import { rankProfiles } from "../services/profileRanker";
+import { refineSearch } from "../services/searchRefiner";
 
 const router = Router();
 
@@ -99,6 +100,63 @@ router.post("/search", async (req, res) => {
         error instanceof Error
           ? error.message
           : "Failed to execute search.",
+    });
+  }
+});
+
+router.post("/refine", async (req, res) => {
+  try {
+    const { filters, rubric, feedback } = req.body;
+
+    if (
+      typeof feedback !== "string" ||
+      !filters ||
+      !rubric
+    ) {
+      return res.status(400).json({
+        error: "filters, rubric and feedback are required.",
+      });
+    }
+
+    const refined = await refineSearch(
+      filters,
+      rubric,
+      feedback
+    );
+
+    // Re-run objective filtering locally.
+    const profiles = getProfiles();
+
+    const filteredProfiles = filterProfiles(
+      profiles,
+      refined.filters
+    );
+
+    // Then use the LLM only for subjective ranking.
+    const rankings =
+      filteredProfiles.length > 0
+        ? await rankProfiles(
+            filteredProfiles,
+            refined.rubric
+          )
+        : [];
+
+    return res.json({
+      filters: refined.filters,
+      rubric: refined.rubric,
+      changes: refined.changes,
+      count: filteredProfiles.length,
+      profiles: filteredProfiles,
+      rankings,
+    });
+  } catch (error) {
+    console.error("Refinement error:", error);
+
+    return res.status(500).json({
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to refine search.",
     });
   }
 });
