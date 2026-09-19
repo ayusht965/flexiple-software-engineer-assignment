@@ -36,20 +36,23 @@ The JSON must have exactly this general structure:
 
 Rules for filters:
 
-- Only extract objective requirements explicitly stated in the recruiter requirement.
-- Do NOT convert job titles, general role descriptions, or subjective preferences into skills.
+FILTER RULES:
+
+- Only put hard requirements into objective filters.
+- Preferences such as "preferred", "ideally", "nice to have", "bonus",
+  or "would be a plus" must NOT become objective filters.
+- Put preferences into the subjective rubric instead.
+- Only extract a skill when the recruiter explicitly names that technology
+  or domain as a requirement or preference.
+- Do NOT convert job titles or general role descriptions into skills.
 - For example, "backend engineer" is a role/title, not a skill.
-- Only add a skill when the recruiter explicitly names that technology or domain.
-- Only add company_types when the recruiter explicitly specifies startup, scaleup, enterprise, or agency experience as a requirement.
-- Do not invent requirements.
-- If years are not specified, use null for both min and max.
-- If location is not specified, use an empty array.
-- If company background is not specified, use an empty array.
-- Normalize obvious technology names where appropriate.
-  Example: "Node" -> "Node.js".
-- Skills should be concise technology or domain names.
-- company_types can ONLY contain:
-  startup, scaleup, enterprise, agency.
+- Only add locations when the recruiter explicitly requires or prefers a location.
+- Only add company_types when the recruiter explicitly requires that company
+  type as a hard requirement.
+- If company type is described as preferred, keep company_types empty and
+  represent that preference in the rubric.
+- Experience ranges should only be added when the recruiter explicitly
+  specifies them.
 
 Rules for the rubric:
 
