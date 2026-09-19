@@ -24,13 +24,21 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api", searchRouter);
 
-app.use((err: unknown, _req: express.Request, res: express.Response) => {
-  console.error(err);
+// Error handler MUST have 4 parameters.
+app.use(
+  (
+    err: unknown,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction
+  ) => {
+    console.error("Unhandled server error:", err);
 
-  res.status(500).json({
-    error: "Internal server error",
-  });
-});
+    res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+);
 
 app.listen(PORT, () => {
   console.log(`API running at http://localhost:${PORT}`);
