@@ -36,7 +36,11 @@ The JSON must have exactly this general structure:
 
 Rules for filters:
 
-- Only extract objective requirements explicitly stated or strongly implied.
+- Only extract objective requirements explicitly stated in the recruiter requirement.
+- Do NOT convert job titles, general role descriptions, or subjective preferences into skills.
+- For example, "backend engineer" is a role/title, not a skill.
+- Only add a skill when the recruiter explicitly names that technology or domain.
+- Only add company_types when the recruiter explicitly specifies startup, scaleup, enterprise, or agency experience as a requirement.
 - Do not invent requirements.
 - If years are not specified, use null for both min and max.
 - If location is not specified, use an empty array.
