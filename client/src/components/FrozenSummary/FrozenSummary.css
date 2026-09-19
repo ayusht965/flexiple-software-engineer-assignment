@@ -1,0 +1,29 @@
+.frozen-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin-top: 28px;
+  padding: 18px;
+
+  border: 1px solid #166534;
+  border-radius: 14px;
+
+  background: #052e16;
+  color: #86efac;
+}
+
+.frozen-summary p {
+  margin: 4px 0 0;
+
+  color: #86efac;
+  opacity: 0.8;
+
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .frozen-summary {
+    align-items: flex-start;
+  }
+}

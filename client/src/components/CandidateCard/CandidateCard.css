@@ -1,0 +1,79 @@
+.candidate-feedback {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-top: 16px;
+  padding-top: 13px;
+
+  border-top: 1px solid var(--border);
+}
+
+.candidate-feedback-label {
+  color: var(--text-subtle);
+
+  font-size: 10px;
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.candidate-feedback-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.feedback-choice {
+  min-height: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  padding: 6px 9px;
+
+  border: 1px solid var(--border);
+  border-radius: 7px;
+
+  background: var(--surface);
+  color: var(--text-muted);
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.feedback-choice:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.feedback-choice.yes.selected {
+  background: #052e16;
+  border-color: #166534;
+  color: #86efac;
+}
+
+.feedback-choice.no.selected {
+  background: #450a0a;
+  border-color: #991b1b;
+  color: #fca5a5;
+}
+
+@media (max-width: 600px) {
+  .candidate-feedback {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .candidate-feedback-actions {
+    width: 100%;
+  }
+
+  .feedback-choice {
+    flex: 1;
+    justify-content: center;
+  }
+}
