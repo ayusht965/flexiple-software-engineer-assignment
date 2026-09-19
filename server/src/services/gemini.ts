@@ -95,9 +95,23 @@ export async function generateJson<T>(
         try {
             parsed = JSON.parse(text);
         } catch {
-            throw new Error(
-                "The AI provider returned malformed JSON."
-            );
+            // Some models wrap otherwise-valid JSON in markdown fences.
+            const cleaned = text
+                .trim()
+                .replace(/^```json\s*/i, "")
+                .replace(/^```\s*/i, "")
+                .replace(/\s*```$/i, "")
+                .trim();
+
+            try {
+                parsed = JSON.parse(cleaned);
+            } catch {
+                console.error("Raw AI response:", text);
+
+                throw new Error(
+                    "The AI provider returned malformed JSON. Please retry."
+                );
+            }
         }
 
         return schema.parse(parsed);
