@@ -35,8 +35,8 @@ export const rankingSchema = z.object({
         profile_id: z.string().min(1),
         score: z.number().min(0).max(100),
         explanation: z.string().min(1).max(600),
-        strengths: z.array(z.string()).max(4),
-        concerns: z.array(z.string()).max(3),
+        strengths: z.array(z.string()).max(6),
+        concerns: z.array(z.string()).max(4),
       })
     )
     .max(48),

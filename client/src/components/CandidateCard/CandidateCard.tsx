@@ -24,22 +24,25 @@ export function CandidateCard({
 }: CandidateCardProps) {
   return (
     <article className="candidate-card">
-      <div className="rank">{rank}</div>
+      <div className="candidate-rank">
+        <span>{rank}</span>
+      </div>
 
       <div className="candidate-main">
-        <div className="candidate-heading">
-          <div>
+        <div className="candidate-top">
+          <div className="candidate-identity">
             <h3>{profile.name}</h3>
 
             <p>
-              {profile.current_title} ·{" "}
+              {profile.current_title}
+              <span> · </span>
               {profile.years_experience} years
             </p>
           </div>
 
-          <div className="score">
+          <div className="candidate-score">
             <strong>{ranking.score}</strong>
-            <span>fit</span>
+            <span>FIT</span>
           </div>
         </div>
 
@@ -53,51 +56,63 @@ export function CandidateCard({
           {ranking.explanation}
         </p>
 
-        <div className="chips">
-          {profile.skills.slice(0, 6).map((skill) => (
-            <span key={skill}>{skill}</span>
-          ))}
-        </div>
+        <div className="candidate-evidence">
+          <div className="evidence-group">
+            <span className="evidence-label">Skills</span>
 
-        {ranking.concerns.length > 0 && (
-          <div className="concerns">
-            {ranking.concerns.map((concern) => (
-              <span key={concern}>{concern}</span>
-            ))}
+            <div className="chips">
+              {profile.skills.slice(0, 5).map((skill) => (
+                <span key={skill}>{skill}</span>
+              ))}
+            </div>
           </div>
-        )}
+
+          {ranking.concerns.length > 0 && (
+            <div className="evidence-group concerns-group">
+              <span className="evidence-label">Watch</span>
+
+              <div className="concerns">
+                {ranking.concerns.slice(0, 2).map((concern) => (
+                  <span key={concern}>{concern}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {onFeedbackChange && (
           <div className="candidate-feedback">
             <span className="candidate-feedback-label">
-              Recruiter feedback
+              Is this candidate a fit?
             </span>
 
             <div className="candidate-feedback-actions">
               <button
                 type="button"
-                className={`feedback-choice yes ${
-                  feedback === "yes" ? "selected" : ""
+                className={`feedback-choice ${
+                  feedback === "yes" ? "selected yes" : ""
                 }`}
                 onClick={() =>
                   onFeedbackChange(profile.id, "yes")
                 }
+                aria-label={`Mark ${profile.name} as a strong fit`}
               >
                 <Check size={14} />
-                Strong fit
+                Yes
               </button>
 
               <button
                 type="button"
-                className={`feedback-choice no ${
-                  feedback === "no" ? "selected" : ""
+                className={`feedback-choice ${
+                  feedback === "no" ? "selected no" : ""
                 }`}
                 onClick={() =>
                   onFeedbackChange(profile.id, "no")
                 }
+                aria-label={`Mark ${profile.name} as not a fit`}
               >
                 <X size={14} />
-                Not a fit
+                No
               </button>
             </div>
           </div>

@@ -38,6 +38,9 @@ function App() {
 
   const [error, setError] = useState("");
   const [frozen, setFrozen] = useState(false);
+  const [retryAction, setRetryAction] = useState<
+  (() => void) | null
+>(null);
 
   const [feedback, setFeedback] = useState("");
 
@@ -57,6 +60,7 @@ function App() {
     setRankings([]);
     setChanges([]);
     setProfileFeedback({});
+    setRetryAction(null);
     setFrozen(false);
 
     try {
@@ -106,6 +110,7 @@ function App() {
           ? err.message
           : "Something went wrong. Please try again."
       );
+      setRetryAction(() => handleSearch);
     } finally {
       setLoading(false);
     }
@@ -117,6 +122,7 @@ function App() {
     setRefining(true);
     setError("");
     setChanges([]);
+    setRetryAction(null);
 
     const candidateFeedback = Object.entries(profileFeedback)
       .map(([profileId, value]) => {
@@ -182,6 +188,7 @@ function App() {
           ? err.message
           : "Failed to refine search."
       );
+      setRetryAction(() => handleRefinement);
     } finally {
       setRefining(false);
       setFeedback("");
@@ -220,6 +227,7 @@ function App() {
 
     setLoading(true);
     setError("");
+    setRetryAction(null);
 
     try {
       const response = await fetch(`${API_URL}/search`, {
@@ -246,6 +254,7 @@ function App() {
           ? err.message
           : "Failed to rerun search."
       );
+      setRetryAction(() => rerunSearch);
     } finally {
       setLoading(false);
     }
@@ -287,7 +296,7 @@ function App() {
         {error && (
           <ErrorState
             message={error}
-            onRetry={handleSearch}
+            onRetry={retryAction ?? handleSearch}
           />
         )}
 
@@ -373,7 +382,13 @@ function App() {
           </>
         )}
 
-        {frozen && <FrozenSummary />}
+        {frozen && spec && (
+          <FrozenSummary
+            spec={spec}
+            profiles={profiles}
+            rankings={rankings}
+          />
+        )}
       </main>
     </div>
   );

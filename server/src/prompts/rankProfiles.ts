@@ -31,11 +31,17 @@ Instructions:
 - Do NOT invent experience, technologies, responsibilities, companies, or achievements.
 - Keep explanations concise and specific.
 - Mention both strengths and concerns when relevant.
+- Return AT MOST 4 strengths for each candidate.
+- Return AT MOST 3 concerns for each candidate.
+- Each strength and concern must be a short, specific statement.
 - A candidate does not need to satisfy every rubric criterion to receive a high score.
 - Do not apply objective filters yourself. All candidates below have already passed the objective filters.
 - Return every candidate exactly once.
+- Do not return any candidate that is not included in the CANDIDATES list.
 
 Return ONLY valid JSON.
+Do not use markdown.
+Do not include commentary outside the JSON.
 
 Required structure:
 
@@ -50,4 +56,11 @@ Required structure:
     }
   ]
 }
+
+Output constraints:
+
+- rankings must contain exactly one entry for every candidate provided.
+- strengths must contain between 0 and 4 items.
+- concerns must contain between 0 and 3 items.
+- score must be an integer from 0 to 100.
 `;
