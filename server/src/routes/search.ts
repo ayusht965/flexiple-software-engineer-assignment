@@ -3,6 +3,7 @@ import { parseSearchRequirement } from "../services/searchParser";
 import { filterProfiles } from "../services/profileFilter";
 import { getProfiles } from "../services/profileData";
 import { searchSpecSchema } from "../schemas";
+import { rankProfiles } from "../services/profileRanker";
 
 const router = Router();
 
@@ -54,6 +55,50 @@ router.post("/filter", (req, res) => {
         error instanceof Error
           ? error.message
           : "Invalid search filters.",
+    });
+  }
+});
+
+router.post("/search", async (req, res) => {
+  try {
+    const parsed = searchSpecSchema.parse(req.body);
+
+    const profiles = getProfiles();
+
+    // Objective filtering happens locally.
+    const filteredProfiles = filterProfiles(
+      profiles,
+      parsed.filters
+    );
+
+    // No need to call the LLM if there are no matches.
+    if (filteredProfiles.length === 0) {
+      return res.json({
+        count: 0,
+        profiles: [],
+        rankings: [],
+      });
+    }
+
+    // LLM is only responsible for subjective ranking.
+    const rankings = await rankProfiles(
+      filteredProfiles,
+      parsed.rubric
+    );
+
+    return res.json({
+      count: filteredProfiles.length,
+      profiles: filteredProfiles,
+      rankings,
+    });
+  } catch (error) {
+    console.error("Search error:", error);
+
+    return res.status(500).json({
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to execute search.",
     });
   }
 });
